@@ -19,8 +19,7 @@ const handleListening = () => {
 const server = app.listen(PORT, handleListening);
 const io = socketIO.listen(server)
 
-let sockets = []
-
 io.on("connection", (socket) => {
-    sockets.push(socket.id)
+    //setTimeout(() => socket.broadcast.emit("hello"), 5000);
+    socket.on("helloGuys", () => console.log("the client said hello"));
 });
