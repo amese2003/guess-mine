@@ -10,14 +10,14 @@ sass.compiler = require("node-sass");
 
 const paths = {
     styles:{
-        src: "src/assets/scss/styles.scss",
+        src: "assets/scss/styles.scss",
         dest: "src/static/styles",
-        watch: "src/assets/scss/**/*.scss"
+        watch: "assets/scss/**/*.scss"
     },
     js:{
-        src: "src/assets/js/main.js",
+        src: "assets/js/main.js",
         dest: "src/static/js",
-        watch: "src/assets/js/**/*.js"
+        watch: "assets/js/**/*.js"
     }
 }
 
