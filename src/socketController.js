@@ -1,6 +1,6 @@
-const socketController = (socket) => {
-    console.log(socket);
+import events from "./events"
 
+const socketController = (socket) => {
     // //setTimeout(() => socket.broadcast.emit("hello"), 5000);
     // socket.on("newMessage", ({ message }) => {
     //     socket.broadcast.emit("messageNotif", { 
@@ -12,8 +12,9 @@ const socketController = (socket) => {
     // socket.on("setNickname", ({nickname}) => {
     //     socket.nickname = nickname;
     // });
+    
 
-    socket.on("setNickname", ({nickname}) => {
+    socket.on(events.setNickname, ({nickname}) => {
         console.log(nickname);
         socket.nickname = nickname;
     })
