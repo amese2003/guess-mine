@@ -6,7 +6,9 @@ const events = {
     sendMessage: "sendMessage",
     newMessage: "newMessage",
     beginPath: "beginPath",
-    strokePath: "strokePath"
+    strokePath: "strokePath",
+    fill: "fill",
+    filled: "filled"
 }
 
 export default events;

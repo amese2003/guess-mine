@@ -31,9 +31,14 @@ const socketController = (socket) => {
         broadcast(events.beginPath, { x, y });
     })
 
-    socket.on(events.strokePath, ({x, y}) => {
-        broadcast(events.strokePath, {x, y});
+    socket.on(events.strokePath, ({x, y, color}) => {
+        broadcast(events.strokePath, {x, y, color});
     })
+
+    socket.on(events.fill, ({color}) =>{
+        broadcast(events.filled, { color });
+    })
+
 };
 
 export default socketController
