@@ -1,6 +1,8 @@
 import events from "./events"
 
-const socketController = (socket) => {
+let sockets = [];
+
+const socketController = (socket, io) => {
     // //setTimeout(() => socket.broadcast.emit("hello"), 5000);
     // socket.on("newMessage", ({ message }) => {
     //     socket.broadcast.emit("messageNotif", { 
@@ -13,14 +15,21 @@ const socketController = (socket) => {
     //     socket.nickname = nickname;
     // });
     const broadcast = (event, data) => socket.broadcast.emit(event, data);
+    const superBroadCast = (event, data) => io.emit(event, data);
+    const sendPlayerUpdate = () =>
+        superBroadCast(events.playerUpdate, {sockets});
 
     socket.on(events.setNickname, ({nickname}) => {
         socket.nickname = nickname;
+        sockets.push({id: socket.id, points: 0, nickname : nickname});
         broadcast(events.newUser, {nickname});        
+        sendPlayerUpdate();
     })
 
     socket.on(events.disconnect, () => {
-        broadcast(events.disconnected, {nickname : socket.nickname});     
+        sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
+        broadcast(events.disconnected, {nickname : socket.nickname});  
+        sendPlayerUpdate(); 
     })
 
     socket.on(events.sendMessage, ({message}) => {
