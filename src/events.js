@@ -9,7 +9,8 @@ const events = {
     strokePath: "strokePath",
     fill: "fill",
     filled: "filled",
-    playerUpdate: "playerUpdate"
+    playerUpdate: "playerUpdate",
+    gameStarted: "gameStarted"
 }
 
 export default events;
