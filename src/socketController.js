@@ -19,10 +19,11 @@ const socketController = (socket, io) => {
             inProgress = true;
             leader = chooseLeader();
             word = chooseWord();
+            superBroadCast(events.gameStarting);
             setTimeout(() => {
                 superBroadCast(events.gameStarted);
                 io.to(leader.id).emit(events.leaderNotif, { word });
-            }, 2000);           
+            }, 3000);           
         }
     }
 
@@ -30,6 +31,17 @@ const socketController = (socket, io) => {
         inProgress = false;
         superBroadCast(events.gameEnded);
     };
+
+    const addPoints = (id) => {
+        sockets = sockets.map(socket => {
+            if(socket.id === id){
+                socket.points += 10;
+            }
+            return socket;
+        })
+        sendPlayerUpdate();
+        endGame();
+    }
 
     socket.on(events.setNickname, ({nickname}) => {
         socket.nickname = nickname;
@@ -50,8 +62,16 @@ const socketController = (socket, io) => {
         sendPlayerUpdate(); 
     })
 
-    socket.on(events.sendMessage, ({message}) => {
-        broadcast(events.newMessage, {message, nickname : socket.nickname});
+    socket.on(events.sendMessage, ({message}) => {        
+        if(message === word){
+            superBroadCast(events.newMessage, {
+                message : `Winner is ${socket.nickname}, word was: ${word}`,
+                nickname: "Bot"
+            });
+            addPoints(socket.id);
+        } else {
+            broadcast(events.newMessage, {message, nickname : socket.nickname});
+        }
     })
 
     socket.on(events.beginPath, ({x, y}) => {
