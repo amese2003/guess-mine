@@ -5,6 +5,7 @@ let sockets = [];
 let inProgress = false;
 let word = null;
 let leader = null;
+let timeout = null;
 
 const chooseLeader = () => sockets[Math.floor(Math.random() * sockets.length)]
 
@@ -15,21 +16,28 @@ const socketController = (socket, io) => {
         superBroadCast(events.playerUpdate, {sockets});
 
     const startGame = () => {
-        if (inProgress === false){
-            inProgress = true;
-            leader = chooseLeader();
-            word = chooseWord();
-            superBroadCast(events.gameStarting);
-            setTimeout(() => {
-                superBroadCast(events.gameStarted);
-                io.to(leader.id).emit(events.leaderNotif, { word });
-            }, 3000);           
-        }
+        if(sockets.length > 1){
+            if (inProgress === false){
+                inProgress = true;
+                leader = chooseLeader();
+                word = chooseWord();
+                superBroadCast(events.gameStarting);
+                setTimeout(() => {
+                    superBroadCast(events.gameStarted);
+                    io.to(leader.id).emit(events.leaderNotif, { word });
+                    timeout = setTimeout(endGame, 10000);
+                }, 5000);
+            }
+        }        
     }
 
     const endGame = () => {
         inProgress = false;
         superBroadCast(events.gameEnded);
+        if(timeout !== null){
+            clearTimeout(timeout);
+        }
+        setTimeout(() => startGame(), 2000);
     };
 
     const addPoints = (id) => {
@@ -40,7 +48,7 @@ const socketController = (socket, io) => {
             return socket;
         })
         sendPlayerUpdate();
-        endGame();
+        endGame();        
     }
 
     socket.on(events.setNickname, ({nickname}) => {
@@ -48,9 +56,7 @@ const socketController = (socket, io) => {
         sockets.push({id: socket.id, points: 0, nickname : nickname});
         broadcast(events.newUser, {nickname});        
         sendPlayerUpdate();
-        if(sockets.length === 2){
-            startGame();
-        }
+        startGame();
     })
 
     socket.on(events.disconnect, () => {
